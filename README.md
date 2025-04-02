@@ -26,7 +26,7 @@ EnergyNet is a framework for simulating smart grid environments and training rei
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-repo/EnergyNet.git
+git clone https://github.com/CLAIR-LAB-TECHNION/energy-net
 cd EnergyNet
 
 # Install package
