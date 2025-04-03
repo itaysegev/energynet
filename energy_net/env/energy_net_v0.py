@@ -18,14 +18,12 @@ efficiently manage electricity markets and battery storage.
 """
 
 import gymnasium as gym
-from gymnasium import spaces
-import numpy as np
-from typing import Dict, Any, Tuple, Union, List, Optional
+from typing import Dict, Any, Union, Optional
 
 from energy_net.controllers.energy_net_controller import EnergyNetController
-from energy_net.market.iso.demand_patterns import DemandPattern
-from energy_net.market.iso.cost_types import CostType
-from energy_net.market.pricing_policy import PricingPolicy
+from energy_net.dynamics.consumption_dynamics.demand_patterns import DemandPattern
+from energy_net.market.pricing.cost_types import CostType
+from energy_net.market.pricing.pricing_policy import PricingPolicy
 
 
 class EnergyNetV0(gym.Env):

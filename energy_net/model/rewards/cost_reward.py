@@ -1,6 +1,6 @@
 # energy_net_env/rewards/cost_reward.py
 
-from energy_net.rewards.base_reward import BaseReward
+from energy_net.model.rewards.base_reward import BaseReward
 from typing import Dict, Any
 
 class CostReward(BaseReward):

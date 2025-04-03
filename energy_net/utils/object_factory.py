@@ -1,4 +1,4 @@
-# iso_factory.py
+# object_factory.py
 
 from typing import Dict, Any
 from energy_net.market.iso.hourly_pricing_iso import HourlyPricingISO

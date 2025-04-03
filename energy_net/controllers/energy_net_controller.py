@@ -24,32 +24,23 @@ separate environments and provides a more realistic simulation.
 """
 
 import numpy as np
-import gymnasium as gym
 from gymnasium import spaces
-import logging
 import yaml
-import os
-from typing import Dict, Any, Tuple, Union, List, Optional
-from stable_baselines3 import PPO
+from typing import Dict, Any, Optional
 
 from energy_net.utils.logger import setup_logger
-from energy_net.market.pricing_policy import PricingPolicy
-from energy_net.market.iso.cost_types import CostType, calculate_costs
-from energy_net.market.iso.demand_patterns import DemandPattern, calculate_demand
+from energy_net.market.pricing.cost_types import calculate_costs
+from energy_net.dynamics.consumption_dynamics.demand_patterns import calculate_demand
 from energy_net.controllers.iso.pricing_strategy import PricingStrategyFactory
 from energy_net.controllers.unified_metrics_handler import UnifiedMetricsHandler
 from energy_net.controllers.pcs.battery_manager import BatteryManager
 
 # Import PCSUnit for full functionality
 from energy_net.components.pcsunit import PCSUnit
-from energy_net.dynamics.energy_dynamcis import EnergyDynamics, ModelBasedDynamics
-from energy_net.dynamics.production_dynamics.deterministic_production import DeterministicProduction
-from energy_net.dynamics.consumption_dynamics.deterministic_consumption import DeterministicConsumption
-from energy_net.dynamics.storage_dynamics.deterministic_battery import DeterministicBattery
 
 # Import reward classes for reference in metrics handler
-from energy_net.rewards.base_reward import BaseReward
-from energy_net.rewards.cost_reward import CostReward
+from energy_net.model.rewards.base_reward import BaseReward
+from energy_net.model.rewards import CostReward
 
 
 class EnergyNetController:

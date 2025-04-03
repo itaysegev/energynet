@@ -1,11 +1,6 @@
-import numpy as np
-import logging
-from typing import Any, List, Mapping
-
-from energy_net.components.grid_entity import GridEntity
+from energy_net.grid_entity import GridEntity
 from energy_net.agents.agent import Agent
-from energy_net.defs import Bounds
-from energy_net.rewards.base_reward import BaseReward
+from energy_net.model.rewards.base_reward import BaseReward
 
 
 class StrategicEntity():

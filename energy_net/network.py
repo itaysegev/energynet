@@ -1,9 +1,7 @@
 
-from energy_net.components.grid_entity import GridEntity
-from typing import Optional, Tuple, Dict, Any, Union
+from energy_net.grid_entity import GridEntity
+from typing import Union
 import numpy as np
-from gymnasium import spaces
-
 
 from energy_net.stratigic_entity import StrategicEntity
 from energy_net.defs import Bounds

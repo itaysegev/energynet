@@ -6,9 +6,8 @@ from energy_net.components.storage_devices.battery import Battery
 from energy_net.components.production_devices.production_unit import ProductionUnit
 from energy_net.components.consumption_devices.consumption_unit import ConsumptionUnit
 from energy_net.dynamics.energy_dynamcis import EnergyDynamics
-from energy_net.components.grid_entity import CompositeGridEntity
-from energy_net.utils.logger import setup_logger  # Import the logger setup
-from energy_net.utils.utils import dict_level_alingment
+from energy_net.grid_entity import CompositeGridEntity
+
 
 class PCSUnit(CompositeGridEntity):
     """
@@ -36,9 +35,9 @@ class PCSUnit(CompositeGridEntity):
         if battery_dynamics_type == 'model_based':
             battery_model_type = battery_config.get('model_type', 'deterministic_battery')
             if battery_model_type == 'deterministic_battery':
-                from energy_net.dynamics.storage_dynamics.deterministic_battery import DeterministicBattery
+                from energy_net.dynamics.storage_dynamics.battery_dynamics_det import BatteryDynamicsDet
 
-                battery_dynamics: EnergyDynamics = DeterministicBattery(
+                battery_dynamics: EnergyDynamics = BatteryDynamicsDet(
                     model_parameters=battery_config.get('model_parameters', {})
                 )
             else:
@@ -63,9 +62,9 @@ class PCSUnit(CompositeGridEntity):
         if production_dynamics_type == 'model_based':
             production_model_type = production_config.get('model_type', 'deterministic_production')
             if production_model_type == 'deterministic_production':
-                from energy_net.dynamics.production_dynamics.deterministic_production import DeterministicProduction
+                from energy_net.dynamics.production_dynamics.production_dynmaics_det import ProductionDynamicsDet
 
-                production_dynamics: EnergyDynamics = DeterministicProduction(
+                production_dynamics: EnergyDynamics = ProductionDynamicsDet(
                     model_parameters=production_config.get('model_parameters', {})
                 )
             else:
@@ -90,9 +89,9 @@ class PCSUnit(CompositeGridEntity):
         if consumption_dynamics_type == 'model_based':
             consumption_model_type = consumption_config.get('model_type', 'deterministic_consumption')
             if consumption_model_type == 'deterministic_consumption':
-                from energy_net.dynamics.consumption_dynamics.deterministic_consumption import DeterministicConsumption
+                from energy_net.dynamics.consumption_dynamics.consumption_dynamics_det import ConsumptionDynamicsDet
 
-                consumption_dynamics: EnergyDynamics = DeterministicConsumption(
+                consumption_dynamics: EnergyDynamics = ConsumptionDynamicsDet(
                     model_parameters=consumption_config.get('model_parameters', {})
                 )
             else:

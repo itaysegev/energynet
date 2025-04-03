@@ -15,10 +15,10 @@ By isolating these calculations in a separate module, we improve modularity and 
 of the PCS controller while keeping the core logic clean.
 """
 
-from typing import Dict, Any, Optional, List, Tuple
+from typing import Dict, Any, Optional, List
 import numpy as np
 import logging
-from energy_net.rewards.base_reward import BaseReward
+from energy_net.model.rewards.base_reward import BaseReward
 
 class PCSMetricsHandler:
     """

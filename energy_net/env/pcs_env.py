@@ -6,7 +6,6 @@ wrapped appropriately for training with RL-Baselines3-Zoo.
 """
 
 import os
-import gymnasium as gym
 from stable_baselines3 import PPO
 from stable_baselines3.common.monitor import Monitor
 
@@ -65,7 +64,7 @@ def make_pcs_env_zoo(
             print(f"Error loading ISO policy: {e}")
     
     # Import here to avoid circular imports
-    from energy_net.alternating_wrappers import PCSEnvWrapper
+    from tmp.alternating_wrappers import PCSEnvWrapper
     
     # Apply PCS wrapper
     env = PCSEnvWrapper(env, iso_policy=iso_policy)

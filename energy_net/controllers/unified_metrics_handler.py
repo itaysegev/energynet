@@ -16,11 +16,11 @@ the unified simulation.
 
 import logging
 import numpy as np
-from typing import Dict, Any, Optional, List, Tuple, Union
+from typing import Dict, Any, Optional
 import matplotlib.pyplot as plt
 
 # Import reward classes
-from energy_net.rewards.base_reward import BaseReward
+from energy_net.model.rewards.base_reward import BaseReward
 
 
 class UnifiedMetricsHandler:

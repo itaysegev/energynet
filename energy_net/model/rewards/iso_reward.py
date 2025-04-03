@@ -1,6 +1,6 @@
 from typing import Dict, Any
-from energy_net.rewards.base_reward import BaseReward
-import numpy as np
+from energy_net.model.rewards.base_reward import BaseReward
+
 
 class ISOReward(BaseReward):
     """

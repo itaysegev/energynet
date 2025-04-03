@@ -1,4 +1,4 @@
-# dynamics/deterministic_battery.py
+# dynamics/battery_dynamics_det.py
 
 from typing import Any, Dict
 from energy_net.dynamics.energy_dynamcis import ModelBasedDynamics
@@ -6,7 +6,7 @@ import math
 
 
 
-class DeterministicBattery(ModelBasedDynamics):
+class BatteryDynamicsDet(ModelBasedDynamics):
     """
     Deterministic Battery Dynamics.
     

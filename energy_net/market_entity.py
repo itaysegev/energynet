@@ -3,9 +3,8 @@ from abc import abstractmethod
 from energy_net.components import pcsunit
 from energy_net.model.state import State
 from energy_net.model.action import EnergyAction
-from energy_net.rewards.base_reward import BaseReward
-from energy_net.defs import Bid
-from energy_net.components.grid_entity import GridEntity
+from energy_net.model.rewards.base_reward import BaseReward
+from energy_net.grid_entity import GridEntity
 from energy_net.stratigic_entity import StrategicEntity
 
 
