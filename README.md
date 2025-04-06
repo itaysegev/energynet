@@ -33,6 +33,26 @@ cd EnergyNet
 pip install -e .
 ```
 
+## Testing
+
+To run the test suite, use the following command:
+
+```bash
+python -m unittest discover tests
+```
+
+This will run all test files in the `tests` directory. For more detailed test output, you can use:
+
+```bash
+python -m unittest discover tests -v
+```
+
+To run a specific test file, you can use:
+
+```bash
+python -m unittest tests/test_environment_registration.py
+```
+
 ## Configuration
 
 ### Main Configuration Files
@@ -56,6 +76,8 @@ pip install -e .
 
 ```python
 env = EnergyNetV0(
+    controller_name="EnergyNetController",  # Name of the controller class
+    controller_module="energy_net.controllers",  # Module containing the controller
     cost_type="CONSTANT",         # CONSTANT, VARIABLE, TIME_OF_USE
     pricing_policy="ONLINE",      # ONLINE, QUADRATIC, CONSTANT
     demand_pattern="SINUSOIDAL",  # SINUSOIDAL, RANDOM, PERIODIC, SPIKES
