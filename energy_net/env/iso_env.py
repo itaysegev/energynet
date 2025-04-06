@@ -20,6 +20,8 @@ def make_iso_env_zoo(
     dispatch_strategy="PROPORTIONAL",
     monitor=True,
     seed=None,
+    controller_name="EnergyNetController",
+    controller_module="energy_net.controllers",
     **kwargs
 ):
     """
@@ -33,6 +35,8 @@ def make_iso_env_zoo(
         dispatch_strategy: Strategy for dispatch when not controlled by agent
         monitor: Whether to wrap with Monitor for episode stats
         seed: Random seed
+        controller_name: Name of the controller class to use
+        controller_module: Python module path where the controller is defined
         **kwargs: Additional arguments to pass to EnergyNetV0
         
     Returns:
@@ -45,6 +49,8 @@ def make_iso_env_zoo(
     
     # Create base environment
     env_kwargs = {
+        "controller_name": controller_name,
+        "controller_module": controller_module,
         "dispatch_config": {
             "use_dispatch_action": use_dispatch_action,
             "default_strategy": dispatch_strategy

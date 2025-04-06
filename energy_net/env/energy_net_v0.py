@@ -18,9 +18,9 @@ efficiently manage electricity markets and battery storage.
 """
 
 import gymnasium as gym
+import importlib
 from typing import Dict, Any, Union, Optional
 
-from energy_net.controllers.energy_net_controller import EnergyNetController
 from energy_net.dynamics.consumption_dynamics.demand_patterns import DemandPattern
 from energy_net.market.pricing.cost_types import CostType
 from energy_net.market.pricing.pricing_policy import PricingPolicy
@@ -34,7 +34,7 @@ class EnergyNetV0(gym.Env):
     following a multi-agent extension of the Gym interface where step() takes multiple
     actions and returns observations, rewards, and done flags for all agents.
     
-    The environment uses a unified EnergyNetController to manage the sequential
+    The environment uses a unified controller to manage the sequential
     simulation, where:
     1. ISO agent sets energy prices
     2. PCS agent responds with battery control actions
@@ -48,69 +48,27 @@ class EnergyNetV0(gym.Env):
     
     def __init__(
         self,
-        cost_type: Union[str, CostType] = None,
-        pricing_policy: Union[str, PricingPolicy] = None,
-        demand_pattern: Union[str, DemandPattern] = None,
-        num_pcs_agents: int = 1,
-        render_mode: Optional[str] = None,
-        env_config_path: Optional[str] = 'configs/environment_config.yaml',
-        iso_config_path: Optional[str] = 'configs/iso_config.yaml',
-        pcs_unit_config_path: Optional[str] = 'configs/pcs_unit_config.yaml',
-        log_file: Optional[str] = 'logs/environments.log',
-        iso_reward_type: str = 'iso',
-        pcs_reward_type: str = 'cost',
-        dispatch_config: Optional[Dict[str, Any]] = None,
+        controller_name: str = "EnergyNetController",
+        controller_module: str = "energy_net.controllers",
+        **controller_kwargs
     ):
         """
         Initialize the unified Energy Net environment.
         
         Args:
-            cost_type: How grid operation costs are calculated (CONSTANT, VARIABLE, TIME_OF_USE)
-            pricing_policy: Policy for determining energy prices (ONLINE, QUADRATIC, CONSTANT)
-            demand_pattern: Pattern of demand variation over time (SINUSOIDAL, RANDOM, PERIODIC, SPIKES)
-            num_pcs_agents: Number of PCS units (currently only supports 1)
-            render_mode: Visual rendering mode (not currently implemented)
-            env_config_path: Path to environment configuration file
-            iso_config_path: Path to ISO-specific configuration file
-            pcs_unit_config_path: Path to PCS unit configuration file
-            log_file: Path for logging controller events
-            iso_reward_type: Type of reward function for ISO agent
-            pcs_reward_type: Type of reward function for PCS agent
-            dispatch_config: Configuration for dispatch control
+            controller_name: Name of the controller class to use (default: "EnergyNetController")
+            controller_module: Python module path where the controller is defined (default: "energy_net.controllers")
+            **controller_kwargs: Additional keyword arguments to pass to the controller
         """
         super().__init__()
         
-        # Convert enum strings to actual enums if needed
-        if isinstance(cost_type, str):
-            cost_type = CostType[cost_type.upper()]
-        elif cost_type is None:
-            cost_type = CostType.CONSTANT  # Default cost type
-            
-        if isinstance(pricing_policy, str):
-            pricing_policy = PricingPolicy[pricing_policy.upper()]
-        elif pricing_policy is None:
-            pricing_policy = PricingPolicy.ONLINE  # Default pricing policy
-            
-        if isinstance(demand_pattern, str):
-            demand_pattern = DemandPattern[demand_pattern.upper()]
-        elif demand_pattern is None:
-            demand_pattern = DemandPattern.SINUSOIDAL  # Default demand pattern
-        
-        # Initialize the unified controller
-        self.controller = EnergyNetController(
-            cost_type=cost_type,
-            pricing_policy=pricing_policy,
-            demand_pattern=demand_pattern,
-            num_pcs_agents=num_pcs_agents,
-            render_mode=render_mode,
-            env_config_path=env_config_path,
-            iso_config_path=iso_config_path,
-            pcs_unit_config_path=pcs_unit_config_path,
-            log_file=log_file,
-            iso_reward_type=iso_reward_type,
-            pcs_reward_type=pcs_reward_type,
-            dispatch_config=dispatch_config,
-        )
+        # Dynamically import and instantiate the controller
+        try:
+            module = importlib.import_module(controller_module)
+            controller_class = getattr(module, controller_name)
+            self.controller = controller_class(**controller_kwargs)
+        except (ImportError, AttributeError) as e:
+            raise ValueError(f"Failed to initialize controller {controller_name} from module {controller_module}: {str(e)}")
         
         # Define agent spaces
         # Note: In this implementation, we're using dict spaces for compatibility
