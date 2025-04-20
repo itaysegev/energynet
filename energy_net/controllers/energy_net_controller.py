@@ -30,7 +30,6 @@ import logging
 import yaml
 import os
 from typing import Dict, Any, Tuple, Union, List, Optional
-from stable_baselines3 import PPO
 
 from energy_net.utils.logger import setup_logger
 from energy_net.market.pricing_policy import PricingPolicy
