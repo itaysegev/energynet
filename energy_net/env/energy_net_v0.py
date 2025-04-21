@@ -20,6 +20,7 @@ efficiently manage electricity markets and battery storage.
 import gymnasium as gym
 import importlib
 from typing import Dict, Any, Union, Optional
+from gymnasium import spaces
 
 from energy_net.dynamics.consumption_dynamics.demand_patterns import DemandPattern
 from energy_net.market.pricing.cost_types import CostType
@@ -50,6 +51,7 @@ class EnergyNetV0(gym.Env):
         self,
         controller_name: str = "EnergyNetController",
         controller_module: str = "energy_net.controllers",
+        single_agent: bool = True,  # Default to single-agent mode for backward compatibility
         **controller_kwargs
     ):
         """
@@ -58,9 +60,12 @@ class EnergyNetV0(gym.Env):
         Args:
             controller_name: Name of the controller class to use (default: "EnergyNetController")
             controller_module: Python module path where the controller is defined (default: "energy_net.controllers")
+            single_agent: Whether to use single-agent mode (default: True)
             **controller_kwargs: Additional keyword arguments to pass to the controller
         """
         super().__init__()
+        
+        self.single_agent = single_agent
         
         # Dynamically import and instantiate the controller
         try:
@@ -71,20 +76,33 @@ class EnergyNetV0(gym.Env):
             raise ValueError(f"Failed to initialize controller {controller_name} from module {controller_module}: {str(e)}")
         
         # Define agent spaces
-        # Note: In this implementation, we're using dict spaces for compatibility
-        # with multi-agent RL frameworks, but the controller internally uses
-        # separate spaces for each agent
         self.agents = ["iso", "pcs"]
         
-        self.observation_space = {
-            "iso": self.controller.get_iso_observation_space(),
-            "pcs": self.controller.get_pcs_observation_space()
-        }
+        iso_obs_space = self.controller.get_iso_observation_space()
+        pcs_obs_space = self.controller.get_pcs_observation_space()
+        iso_action_space = self.controller.get_iso_action_space()
+        pcs_action_space = self.controller.get_pcs_action_space()
         
-        self.action_space = {
-            "iso": self.controller.get_iso_action_space(),
-            "pcs": self.controller.get_pcs_action_space()
-        }
+        if self.single_agent:
+            # In single-agent mode, combine spaces using Dict
+            self.observation_space = spaces.Dict({
+                "iso": iso_obs_space,
+                "pcs": pcs_obs_space
+            })
+            self.action_space = spaces.Dict({
+                "iso": iso_action_space,
+                "pcs": pcs_action_space
+            })
+        else:
+            # In multi-agent mode, use regular dicts
+            self.observation_space = {
+                "iso": iso_obs_space,
+                "pcs": pcs_obs_space
+            }
+            self.action_space = {
+                "iso": iso_action_space,
+                "pcs": pcs_action_space
+            }
 
     def reset(self, seed=None, options=None):
         """

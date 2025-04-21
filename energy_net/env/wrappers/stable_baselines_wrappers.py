@@ -1,75 +1,83 @@
 from gymnasium import spaces, ObservationWrapper, RewardWrapper, ActionWrapper, Wrapper
-from energy_net.env import EnergyNetEnv
-from typing import List
+from energy_net.env.energy_net_v0 import EnergyNetV0
+from typing import List, Dict, Any
 import numpy as np
 
 class StableBaselines3ObservationWrapper(ObservationWrapper):
     """Observation wrapper for :code:`stable-baselines3` algorithms.
     Parameters
     ----------
-    env: EnergyNetEnv
+    env: EnergyNetV0
     """
 
-    def __init__(self, env: EnergyNetEnv):
-                
+    def __init__(self, env: EnergyNetV0):
         super().__init__(env)
-        self.env: EnergyNetEnv
+        self.env: EnergyNetV0
         
     @property
     def observation_space(self) -> spaces.Box:
-        """Returns single spaces Box object."""
-
-        return self.env.observation_space[0]
+        """Returns flattened Box observation space."""
+        if isinstance(self.env.observation_space, spaces.Dict):
+            # Concatenate all observation spaces
+            low = np.concatenate([space.low for space in self.env.observation_space.values()])
+            high = np.concatenate([space.high for space in self.env.observation_space.values()])
+            return spaces.Box(low=low, high=high, dtype=np.float32)
+        return self.env.observation_space
     
-    def observation(self, observations: List[List[float]]) -> np.ndarray:
+    def observation(self, observations: Dict[str, np.ndarray]) -> np.ndarray:
         """Returns observations as 1-dimensional numpy array."""
-
-        return np.array(observations[0], dtype='float32')
-    
-    
-    
+        if isinstance(observations, dict):
+            return np.concatenate(list(observations.values())).astype(np.float32)
+        return observations
     
 class StableBaselines3ActionWrapper(ActionWrapper):
     """Action wrapper for :code:`stable-baselines3` algorithms.
 
     Parameters
     ----------
-    env: EnergyNetEnv
+    env: EnergyNetV0
     """
 
-    def __init__(self, env: EnergyNetEnv):   
+    def __init__(self, env: EnergyNetV0):   
         super().__init__(env)
-        self.env: EnergyNetEnv
+        self.env: EnergyNetV0
 
     @property
     def action_space(self) -> spaces.Box:
-        """Returns single spaces Box object."""
+        """Returns flattened Box action space."""
+        if isinstance(self.env.action_space, spaces.Dict):
+            # Concatenate all action spaces
+            low = np.concatenate([space.low for space in self.env.action_space.values()])
+            high = np.concatenate([space.high for space in self.env.action_space.values()])
+            return spaces.Box(low=low, high=high, dtype=np.float32)
+        return self.env.action_space
 
-        return self.env.action_space[0]
-
-    def action(self, actions: List[float]) -> List[List[float]]:
-        """Returns actions as 1-dimensional numpy array."""
-
-        return [actions]
-    
+    def action(self, action: np.ndarray) -> Dict[str, np.ndarray]:
+        """Splits flattened action into dictionary."""
+        if isinstance(self.env.action_space, spaces.Dict):
+            # Split the flattened action back into a dictionary
+            dims = [space.shape[0] for space in self.env.action_space.values()]
+            split_actions = np.split(action, np.cumsum(dims)[:-1])
+            return dict(zip(self.env.action_space.keys(), split_actions))
+        return action
     
 class StableBaselines3RewardWrapper(RewardWrapper):
     """Reward wrapper for :code:`stable-baselines3` algorithms.
     
     Parameters
     ----------
-    env: EnergyNetEnv
+    env: EnergyNetV0
     """
 
-    def __init__(self, env: EnergyNetEnv):  
+    def __init__(self, env: EnergyNetV0):  
         super().__init__(env)
-        self.env: EnergyNetEnv
+        self.env: EnergyNetV0
 
-    def reward(self, reward: List[float]) -> float:
-        """Returns reward as float value."""
-
-        return reward[0]
-    
+    def reward(self, reward: Dict[str, float]) -> float:
+        """Returns average reward across all agents."""
+        if isinstance(reward, dict):
+            return np.mean(list(reward.values()))
+        return reward
     
 class StableBaselines3Wrapper(Wrapper):
     """Wrapper for :code:`stable-baselines3` algorithms.
@@ -80,12 +88,12 @@ class StableBaselines3Wrapper(Wrapper):
     
     Parameters
     ----------
-    env: EnergyNetEnv
+    env: EnergyNetV0
     """
 
-    def __init__(self, env: EnergyNetEnv):
+    def __init__(self, env: EnergyNetV0):
         env = StableBaselines3ActionWrapper(env)
         env = StableBaselines3RewardWrapper(env)
         env = StableBaselines3ObservationWrapper(env)
         super().__init__(env)
-        self.env: EnergyNetEnv
+        self.env: EnergyNetV0
