@@ -412,21 +412,21 @@ class TestEnergyNetEnv(unittest.TestCase):
         self.assertTrue(hasattr(self.env, 'observation_space'))
         self.assertTrue(hasattr(self.env, 'action_space'))
         
-        # Check that spaces are dictionaries
-        self.assertIsInstance(self.env.observation_space, dict)
-        self.assertIsInstance(self.env.action_space, dict)
+        # Check that spaces are gymnasium spaces
+        self.assertIsInstance(self.env.observation_space, spaces.Dict)
+        self.assertIsInstance(self.env.action_space, spaces.Dict)
         
         # Check that the spaces contain entries for both agents
-        self.assertIn('iso', self.env.observation_space)
-        self.assertIn('pcs', self.env.observation_space)
-        self.assertIn('iso', self.env.action_space)
-        self.assertIn('pcs', self.env.action_space)
+        self.assertIn('iso', self.env.observation_space.spaces)
+        self.assertIn('pcs', self.env.observation_space.spaces)
+        self.assertIn('iso', self.env.action_space.spaces)
+        self.assertIn('pcs', self.env.action_space.spaces)
         
         # Check that the individual spaces are Gymnasium spaces
-        self.assertIsInstance(self.env.observation_space['iso'], spaces.Space)
-        self.assertIsInstance(self.env.observation_space['pcs'], spaces.Space)
-        self.assertIsInstance(self.env.action_space['iso'], spaces.Space)
-        self.assertIsInstance(self.env.action_space['pcs'], spaces.Space)
+        self.assertIsInstance(self.env.observation_space.spaces['iso'], spaces.Space)
+        self.assertIsInstance(self.env.observation_space.spaces['pcs'], spaces.Space)
+        self.assertIsInstance(self.env.action_space.spaces['iso'], spaces.Space)
+        self.assertIsInstance(self.env.action_space.spaces['pcs'], spaces.Space)
 
     def test_reset(self):
         """Test the reset method"""
@@ -444,8 +444,8 @@ class TestEnergyNetEnv(unittest.TestCase):
         self.assertIsInstance(obs['pcs'], np.ndarray)  # PCS observation
         
         # Check that observations are within their spaces
-        self.assertTrue(self.env.observation_space['iso'].contains(obs['iso']))
-        self.assertTrue(self.env.observation_space['pcs'].contains(obs['pcs']))
+        self.assertTrue(self.env.observation_space.spaces['iso'].contains(obs['iso']))
+        self.assertTrue(self.env.observation_space.spaces['pcs'].contains(obs['pcs']))
 
     def test_step(self):
         """Test the step method"""
@@ -454,12 +454,13 @@ class TestEnergyNetEnv(unittest.TestCase):
         
         # Sample actions from action spaces
         action_dict = {
-            'iso': self.env.action_space['iso'].sample(),
-            'pcs': self.env.action_space['pcs'].sample()
+            'iso': self.env.action_space.spaces['iso'].sample(),
+            'pcs': self.env.action_space.spaces['pcs'].sample()
         }
         
         # Take a step
         obs, reward, terminated, truncated, info = self.env.step(action_dict)
+        
         
         # Check return types
         self.assertIsInstance(obs, dict)
@@ -480,23 +481,15 @@ class TestEnergyNetEnv(unittest.TestCase):
         self.assertIsInstance(obs['iso'], np.ndarray)  # ISO observation
         self.assertIsInstance(obs['pcs'], np.ndarray)  # PCS observation
         
-        # Print debug information
-        print("\nPCS Observation Space:")
-        print(f"Low: {self.env.observation_space['pcs'].low}")
-        print(f"High: {self.env.observation_space['pcs'].high}")
-        print("\nPCS Observation:")
-        print(obs['pcs'])
-        
         # Check that observations are within their spaces
-        self.assertTrue(self.env.observation_space['iso'].contains(obs['iso']))
-        self.assertTrue(self.env.observation_space['pcs'].contains(obs['pcs']))
+        self.assertTrue(self.env.observation_space.spaces['iso'].contains(obs['iso']))
+        self.assertTrue(self.env.observation_space.spaces['pcs'].contains(obs['pcs']))
 
     def test_render(self):
         """Test the render method"""
-        # Test that render works in supported modes
-        self.env.reset()
+        # Test that render raises NotImplementedError
         with self.assertRaises(NotImplementedError):
-            self.env.render()  # Should raise NotImplementedError
+            self.env.render()
 
     def test_close(self):
         """Test the close method"""
@@ -511,8 +504,8 @@ class TestEnergyNetEnv(unittest.TestCase):
         
         # Take a step
         action_dict = {
-            'iso': self.env.action_space['iso'].sample(),
-            'pcs': self.env.action_space['pcs'].sample()
+            'iso': self.env.action_space.spaces['iso'].sample(),
+            'pcs': self.env.action_space.spaces['pcs'].sample()
         }
         obs1_step, _, _, _, _ = self.env.step(action_dict)
         
