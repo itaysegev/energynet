@@ -2,7 +2,7 @@ import gymnasium as gym
 from gymnasium import spaces, ObservationWrapper, RewardWrapper, ActionWrapper
 import numpy as np
 from typing import List
-from energy_net.env import EnergyNetEnv
+from energy_net.env.energy_net_v0 import EnergyNetV0
 
 class ClippedObservationWrapper(ObservationWrapper):
     """Wrapper for observations min-max and periodic normalization.
@@ -11,12 +11,12 @@ class ClippedObservationWrapper(ObservationWrapper):
 
     Parameters
     ----------
-    env: EnergyNetEnv
+    env: EnergyNetV0
     """
 
-    def __init__(self, env: EnergyNetEnv) -> None:
+    def __init__(self, env: EnergyNetV0) -> None:
         super().__init__(env)
-        self.env: EnergyNetEnv
+        self.env: EnergyNetV0
 
     def observation(self, observations: List[List[float]]) -> List[List[float]]:
         """Returns normalized observations."""
