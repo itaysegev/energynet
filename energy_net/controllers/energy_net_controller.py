@@ -45,7 +45,7 @@ from energy_net.components.pcsunit import PCSUnit
 from energy_net.model.rewards.base_reward import BaseReward
 from energy_net.model.rewards.cost_reward import CostReward
 from energy_net.model.rewards.iso_reward import ISOReward
-
+from energy_net.utils.utils import load_config
 
 
 class EnergyNetController:
@@ -120,9 +120,9 @@ class EnergyNetController:
         self.logger.info(f"Using cost type: {cost_type.value}")
 
         # Load configurations
-        self.env_config = self._load_config(env_config_path)
-        self.iso_config = self._load_config(iso_config_path)
-        self.pcs_unit_config = self._load_config(pcs_unit_config_path)
+        self.env_config = load_config(config_path=env_config_path)
+        self.iso_config = load_config(config_path=iso_config_path)
+        self.pcs_unit_config = load_config(config_path=pcs_unit_config_path)
 
         # Initialize shared state variables
         self.current_time = 0.0
@@ -167,14 +167,6 @@ class EnergyNetController:
         
         self.logger.info("EnergyNetController initialized successfully")
 
-    def _load_config(self, config_path: str) -> Dict[str, Any]:
-        """Load configuration from YAML file"""
-        try:
-            with open(config_path, 'r') as file:
-                return yaml.safe_load(file)
-        except Exception as e:
-            self.logger.error(f"Failed to load config from {config_path}: {e}")
-            raise
 
     def _init_iso_components(self, dispatch_config: Optional[Dict[str, Any]]):
         """Initialize ISO-specific components"""

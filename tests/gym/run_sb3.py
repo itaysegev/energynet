@@ -11,6 +11,7 @@ from energy_net.dynamics.consumption_dynamics.demand_patterns import DemandPatte
 from energy_net.env.wrappers.stable_baselines_wrappers import StableBaselines3Wrapper
 import os
 
+
 def make_env():
     # Create the environment with required parameters
     env = EnergyNetV0(
@@ -20,23 +21,24 @@ def make_env():
         cost_type=CostType.CONSTANT,  # Use constant cost function
         demand_pattern=DemandPattern.SINUSOIDAL  # Use sinusoidal demand pattern
     )
-    
+
     # Wrap the environment for Stable Baselines3
     env = StableBaselines3Wrapper(env)
-    
+
     # Create logs directory
-    log_dir = "logs"
+    log_dir = "../../logs"
     os.makedirs(log_dir, exist_ok=True)
-    
+
     # Wrap with Monitor for episode stats
     env = Monitor(env, log_dir)
-    
+
     return env
+
 
 def main():
     # Create the environment
     env = make_env()
-    
+
     # Create the PPO model
     model = PPO(
         "MlpPolicy",
@@ -52,32 +54,33 @@ def main():
         clip_range=0.2,
         ent_coef=0.01
     )
-    
+
     # Create evaluation environment
     eval_env = make_env()
-    
+
     # Create evaluation callback
     eval_callback = EvalCallback(
         eval_env,
         best_model_save_path="./best_model/",
-        log_path="./logs/",
+        log_path="../../logs/",
         eval_freq=10000,
         deterministic=True,
         render=False
     )
-    
+
     # Train the model
     model.learn(
         total_timesteps=1000000,
         callback=eval_callback
     )
-    
+
     # Save the final model
     model.save("ppo_energy_net")
-    
+
     # Close environments
     env.close()
     eval_env.close()
 
+
 if __name__ == "__main__":
-    main() 
+    main()

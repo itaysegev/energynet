@@ -69,7 +69,7 @@ class PricingStrategy(ABC):
             use_dispatch_action: Whether to include dispatch in the action space
             
         Returns:
-            A gymnasium Space object representing the action space
+            A gym Space object representing the action space
         """
         pass
     
